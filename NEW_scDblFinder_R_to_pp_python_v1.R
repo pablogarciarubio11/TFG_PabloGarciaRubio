@@ -10,7 +10,7 @@ setwd("D:/TFG/Pytables_coding")
 {
   #===================================================================
   #This is commented because the necessary packages were already installed, but if they are not installed, uncomment this part and execute it
-  #Execute from here if not installed ...
+  #Execute if not installed 
   
   #install.packages('Seurat', repos = c('https://satijalab.r-universe.dev', 'https://cloud.r-project.org'))
   # SeuratDisk is not currently available on CRAN. You can install it from GitHub with:
@@ -28,65 +28,6 @@ setwd("D:/TFG/Pytables_coding")
   # if (!require("BiocManager", quietly = TRUE))
   #   install.packages("BiocManager")
   # library(BiocManager)
-  #... until here. 
-  #=======================================================================
-  
-  
-  
-  
-  #BiocManager::install("zellkonverter")
-  
-  # En R:
-  #install.packages("remotes")
-  #No es necesaria esta parte
-  
-  #remotes::install_github("cellgeni/sceasy") MIRAR LUEGO ESTA PARTE SI HAY ALGÚN ERROR
-  
-  #BiocManager::install("SingleCellExperiment")
-  
-  #BiocManager::install("glmGamPoi")
-  
-  #BiocManager::install("SingleR")
-  
-  #BiocManager::install("plger/scDblFinder")
-  
-  #BiocManager::install("AnnotationHub")
-  
-  #BiocManager::install("ensembldb")
-  
-  #BiocManager::install("BPCells")
-  
-  #BiocManager::install("scCustomize")
-  
-  #BiocManager::install('glmGamPoi')
-  
-  #BiocManager::install("batchelor")
-  
-  #BiocManager::install("ensembldb")
-  
-  #BiocManager::install("SingleR")
-  
-  # SETUP ERRORs
-  # SI EN ALGÚN MOMENTO OCURRE ESTE ERROR:
-  # Error: vector memory exhausted (limit reached?)
-  # The problem with Rstudio, and identifies a solution, shown below:
-  # Step 1: Open terminal,
-  # Step 2:
-  #  cd ~
-  #  touch .Renviron
-  # open .Renviron
-  # Step 3: Save the following as the first line of .Renviron:
-  #  R_MAX_VSIZE=100Gb
-  # Note: This limit includes both physical and virtual memory; so setting _MAX_VSIZE=16Gb on a machine with 16Gb of physical memory
-  # may not prevent this error. You may have to play with this parameter, depending on the specs of your machine.
-  
-  
-  
-  #=========================================================================
-  #EMPEZAR A EJECUTAR DESDE AQUÍ EN CASO DE QUE SEA NECESARIO. LO ANTERIOR HASTA EL PRIMER COMENTARIO 
-  #NO HACERLO
-  #AÑADIDO:
-  #SOLO HACER ESTO EN CASO DE NO TENER LAS LIBRERÍAS INSTALADAS
   # install.packages("tidyverse")
   # install.packages("patchwork")
   # install.packages("scales")
@@ -101,7 +42,7 @@ setwd("D:/TFG/Pytables_coding")
 #2.START SETUP 
   {
   # LOAD R PACKAGES 
-  # ESTO SÍ HACE FALTA HACERLO, PARA COMPROBAR QUE NO HAY NINGÚN PROBLEMA
+  # To verify that everything works properly.
   library(tidyverse)
   library(dplyr)
   library(Matrix)
@@ -119,120 +60,81 @@ setwd("D:/TFG/Pytables_coding")
 
 
 #2.- CREATE SEURAT OBJECT 
- #   H5 from CellBender
-  #  2.1 PYTABLES!!!
-    #{
-      # setwd('/Users/rodrigo/Desktop/scRNAseq/Mmu_MicroRef/Pytables')
-      # Seurat 4.0.2 uses a dataloader Read10X_h5() which is not currently compatible with the CellBender output file format.
-      # Hopefully Seurat will update its dataloader to ignore extra information in the future, but in the interim, we can use 
-      # a super handy utility from PyTables to strip the extra CellBender information out of the output file so that Seurat 
-      # can load it.From a python environment in which PyTables is installed, do the following at the command line
-      # PYTABLES
-      # BASH-colocate en la carpeta donde vas a guardar los h5
-      # ptrepack --complevel 5 CellBender_Append_MiR_ALL_CTR_Brennan_filtered.h5:/matrix Global_Brennan_.h5:/matrix
-    #TIENE QUE TENER LA ESCTURTURA DE 
-    #ref = Global ... GLobalPrimiR... (sin espacios o guión bajos)
-    #samp = Tabula o Brennan o Hou
-    #cond = GSMXXXX_Ctr
-     # }
+ #   H5 from CellBender   
     
-    #2.2  INDIVIDUALMENTE (Sin tener que dividir en CellBender)
-  #   {
-  #   # 10X CellRanger .HDF5 format
-  #     GlobalprimiR_Tabula_GSM7474475_1dpi <- Read10X_h5(
-  #     filename = "/Users/rodrigo/Desktop/scRNAseq/Mmu_MicroRef/Pytables/GlobalprimiR_Tabula_GSM7474475_1dpi.h5",
-  #     use.names = TRUE,
-  #     unique.features = TRUE)
-  #   
-  #     GlobalprimiR_Tabula_GSM7474475_1dpi[1:10, 1:10]
-  #     dim(GlobalprimiR_Tabula_GSM7474475_1dpi)
-  #   # 78988 50343
-  #     GlobalprimiR_Tabula_GSM7474475_1dpi <- CreateSeuratObject(counts = GlobalprimiR_Tabula_GSM7474475_1dpi, assay = "RNA", min.cells = 3, min.features = 200)
-  #   dim(GlobalprimiR_Tabula_GSM7474475_1dpi)
-  #   
-  #   
-  #   
-  #   Global_Squair_GSM5961588_Ctr <- CreateSeuratObject(counts = Count_Global)
-  #   dim(Global_Squair_GSM5961588_Ctr)
-  #   saveRDS(GlobalPrimiRtronLink_Brennan_GSM5904825_Ctr, file = "GlobalPrimiRtronLink_Brennan_GSM5904825_Ctr.rds") # SAVE
-  #   saveRDS(Global_Brennan, file = "Global_Brennan_GSM5904825_Ctr.rds") 
-  # }
-    
-    
-    # 2.4 COLECTIVAMENTE si los archivos son pequeños y deben dividirse para ejecutar CellBender entonces ir arriba y despues run
-    # EJECUTAR ESTA PARTE DEL CÓDIGO
+    # 2.4 Collectively
     {
-      # Script integrado para listar y procesar archivos .h5
-      # Directorio objetivo
+      # Script integrated to be able to list and process .h5 files
+      # Target directory
       directorio <- "D:/TFG/Pytables_noncoding"
      
-      # Verificar si el directorio existe
+      # Verify if the directory exists
       if (!dir.exists(directorio)) {
-        stop("El directorio no existe: ", directorio)
+        stop("The directory does not exist: ", directorio)
       }
       
-      # Obtener todos los archivos del directorio
+      # Obtain all the files from the directory
       todos_archivos <- list.files(directorio, full.names = FALSE)
       cat(todos_archivos)
       
-      # Filtrar solo archivos .h5
+      # Filter to find only the .h5 files
       archivos_h5 <- todos_archivos[grepl("\\.h5$", todos_archivos, ignore.case = TRUE)]
       cat(archivos_h5)
       
-      # Verificar si se encontraron archivos .h5
+      # Verify that .h5 files were found
       if (length(archivos_h5) == 0) {
-        stop("No se encontraron archivos .h5 en el directorio.")
+        stop(".h5 files were not found in the directory.")
       }
       
-      # Mostrar los archivos encontrados
-      cat("Archivos .h5 encontrados:\n")
+      # Show the found files
+      cat(".h5 files found:\n")
       lista_c <- paste0("c(\"", paste(archivos_h5, collapse = "\", \""), "\")")
       cat(lista_c, "\n")
-      cat("Total de archivos .h5 encontrados:", length(archivos_h5), "\n\n")
+      cat("Total number of .h5 files found:", length(archivos_h5), "\n\n")
       
-      # Establecer el directorio de trabajo para los archivos
+      # Establish the work directory for the files
       setwd(directorio)
       
-      # Crear lista empleando el script automatizado
-      # Lista de archivos a procesar (ahora generada automáticamente)
+      # Create a list 
+      # File list to be processed (automatically generated)
       files <- archivos_h5
       
-      # Lista vacía para almacenar los objetos Seurat
+      # Empty list to store the Seurat objects
       seurat_objects <- list()
       
-      # Iterar sobre los archivos y procesarlos
+      # Iterate over the files and process them
       for (file in files) {
-        cat("Procesando archivo:", file, "\n")
+        cat("Processing file:", file, "\n")
         
-        # Leer el archivo HDF5 con Read10X_h5
+        # Read the HDF5 file with Read10x_h5
         tryCatch({
           adata <- Read10X_h5(filename = file, use.names = TRUE, unique.features = TRUE)
           
-          # Crear nombre de variable limpio (sin extensión .h5 y caracteres especiales)
+          # Create the clean variable name (without the .h5 extension nor any special characters)
           var_name <- gsub("\\.h5$", "", file)
-          var_name <- gsub("[^A-Za-z0-9_]", "_", var_name)  # Reemplazar caracteres especiales
-          var_name <- paste0("seurat_", var_name)  # Prefijo para identificar fácilmente
+          var_name <- gsub("[^A-Za-z0-9_]", "_", var_name)  # Replace the special characteres
+          var_name <- paste0("seurat_", var_name)  # Preffix to identify the objects easily
           
-          # Crear objeto Seurat
+          # Create the Seurat object
           seurat_obj <- CreateSeuratObject(
             counts = adata, 
             project = gsub("\\.h5$", "", file),
             min.cells = 3,
-            min.features = 200 #ESTo ES UNA RESTRICCIÓN DEL NÚMERO DE CÉLULAS/EVENTOS QUE VAMOS A EVALUAR
-            #IMPORTANTE COMENTAR ESTO
+            min.features = 200 
+            #This restricts the number of cells or events that we are going to evaluate
           )
           
-          # Asignar el objeto Seurat al entorno global con nombre dinámico
+          # Assign the Seurat object to the global environment with a dynamic name
           assign(var_name, seurat_obj, envir = .GlobalEnv)
           
-          # También guardarlo en la lista para acceso programático
+          # Store the object in a list to be able to access it
           seurat_objects[[var_name]] <- seurat_obj
           
-          cat("Archivo", file, "procesado exitosamente como objeto:", var_name, "\n")
-          cat("Dimensiones:", dim(seurat_obj), "(genes x células)\n")
+          cat("File", file, "processed successfully as the object:", var_name, "\n")
+          cat("Dimensions:", dim(seurat_obj), "(genes x cells)\n")
           
         }, error = function(e) {
-          cat("Error procesando", file, ":", e$message, "\n")
+          cat("Processing error", file, ":", e$message, "\n")
         })
       }
       
