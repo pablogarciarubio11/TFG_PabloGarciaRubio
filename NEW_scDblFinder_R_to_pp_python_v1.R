@@ -1,6 +1,7 @@
 
 #Seurat Command List https://satijalab.org/seurat/articles/essential_commands.html 
-#EJECUTAR ESTO SIEMPRE AL INICIO DE LA SESIÓN DE R
+#EXECUTE THIS ALWAYS AT THE START OF EACH R SESSION
+#The directories used were both coding and non-coding
 setwd("D:/TFG/Pytables_coding")
 
 .libPaths()
@@ -8,8 +9,8 @@ setwd("D:/TFG/Pytables_coding")
 #1.- PACKAGES & LIBRARIES
 {
   #===================================================================
-  #ESTO YA NO HACE FALTA QUE LO HAGA, YA QUE YA HE INSTALADO TODO
-  #HACER EN CASO DE QUE NO ESTÉ INSTALADO DESDE AQUÍ ...
+  #This is commented because the necessary packages were already installed, but if they are not installed, uncomment this part and execute it
+  #Execute from here if not installed ...
   
   #install.packages('Seurat', repos = c('https://satijalab.r-universe.dev', 'https://cloud.r-project.org'))
   # SeuratDisk is not currently available on CRAN. You can install it from GitHub with:
@@ -27,7 +28,7 @@ setwd("D:/TFG/Pytables_coding")
   # if (!require("BiocManager", quietly = TRUE))
   #   install.packages("BiocManager")
   # library(BiocManager)
-  #... HASTA AQUÍ. LO SIGUIENTE NO HACERLO HASTA NUEVO COMENTARIO
+  #... until here. 
   #=======================================================================
   
   
