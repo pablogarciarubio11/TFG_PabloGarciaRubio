@@ -136,77 +136,34 @@ setwd("D:/TFG/Pytables_coding")
         })
       }
       
-      cat("\nProcesamiento completado para", length(files), "archivos.\n")
-      cat("\nObjetos Seurat creados en el entorno:\n")
+      cat("\nProcessing completed for", length(files), "files.\n")
+      cat("\nSeurat objects created in the environment:\n")
       for (obj_name in names(seurat_objects)) {
         cat("-", obj_name, "\n")
       }
       
-      # Opcional: Mostrar resumen de todos los objetos
-      cat("\n=== RESUMEN DE OBJETOS SEURAT ===\n")
+      cat("\n=== SUMMARY OF THE SEURAT OBJECTS ===\n")
       for (obj_name in names(seurat_objects)) {
         obj <- get(obj_name, envir = .GlobalEnv)
-        cat("Objeto:", obj_name, "\n")
-        cat("  Proyecto:", obj@project.name, "\n")
-        cat("  Dimensiones:", dim(obj)[1], "genes x", dim(obj)[2], "células\n")
-        cat("  Archivo origen:", paste0(gsub("^seurat_", "", obj_name), ".h5"), "\n\n")
-        #cat("  Archivo origen:", paste0(gsub("seurat_", "", gsub("_", ".", obj_name)), ".h5"), "\n\n")
+        cat("Object:", obj_name, "\n")
+        cat("  Project:", obj@project.name, "\n")
+        cat("  Dimensions:", dim(obj)[1], "genes x", dim(obj)[2], "células\n")
+        cat("  Origin file:", paste0(gsub("^seurat_", "", obj_name), ".h5"), "\n\n")
       }
     }
   
-# 3.- DOUBLETS scDblFinder INCLUIR EN EN METADATA UNA COLUMNA CON DOUBLETS_SCDBLF
-#     3.1 Individual.
-#     {
-#     # Extract count matrix, prepare a sce object to scDblFinder and execute
-#     # Extraer matriz de cuentas
-#     countsGlobal_Squair <- Global_Squair_GSM5961588_Ctr[["RNA"]]$counts
-#     
-#     # Crear objeto SingleCellExperiment
-#     sceGlobal_Squair <- SingleCellExperiment(assays = list(counts = countsGlobal_Squair))
-#     
-#     # Ejecutar scDblFinder
-#     sceGlobal_Squair <- scDblFinder(sceGlobal_Squair)
-#     
-#     # Ver tabla de clasificación
-#     table(sceGlobal_Squair$scDblFinder.class)
-#     
-#     # Transferir los resultados de scDblFinder al objeto Seurat original
-#     Global_Squair_GSM5961588_Ctr$DoubletClass <- sceGlobal_Squair$scDblFinder.class
-#     Global_Squair_GSM5961588_Ctr$DoubletScore <- sceGlobal_Squair$scDblFinder.score
-#     
-#     # Opcional: ver los metadatos con los nuevos campos
-#     View(Global_Squair_GSM5961588_Ctr@meta.data)
-#     
-#     # Guardar el objeto Seurat enriquecido con clasificación doublet/singlet
-#     saveRDS(GlobalPrimiRtronLink_Brennan_GSM5904825_Ctr, file = "GlobalPrimiRtronLink_Brennan_GSM5904825_Ctr.rds")
-#     
-#     # Global_Tabula_GSM7474457_Con <- readRDS("Global_Tabula_GSM7474457_Con.rds") # LOAD
-#     
-#    
-#   NOOOOOOOOO  # REMOVE DOUBLETS
-#     # Global_Tabula_GSM7474457_Con_SinDbl <- subset(Global_Tabula_GSM7474457_Con, subset = scDblFinder.class == "singlet")
-#     # View(Global_Tabula_GSM7474457_Con_SinDbl@meta.data)
-#     # dim(Global_Tabula_GSM7474457_Con_SinDbl)
-#     # 
-#     # saveRDS(Global_Tabula_GSM7474457_Con_SinDbl, file = "Global_Tabula_GSM7474457_ConSinDbl.rds") # SAVE
-#     # 
-#     # Global_Tabula_GSM7474457_Con_SinDbl<- readRDS("Global_Tabula_GSM7474457_ConSinDbl.rds") # LOAD
-#     }    
-#     
-    # .2 ITERACION.
+# 3.- DOUBLETS scDblFinder INCLUDE IN THE METADATA A COLUMN WITH DOUBLETS_SCDBLF
+    # .2 ITERATION
     {
-      # Script iterativo para detección de doublets con scDblFinder
+      # Iterative script for the detection of doublets with scDblFinder
       
-      # Función para identificar objetos Seurat en el entorno
+      # Function that identifies the Seurat objects in the environment
       get_seurat_objects <- function() {
         all_objects <- ls(envir = .GlobalEnv)
         seurat_objects <- c()
         for (obj_name in all_objects) {
           obj <- get(obj_name, envir = .GlobalEnv)
-          if (inherits(obj, "Seurat") && grepl("^seurat_GSM", obj_name)) { #El ^ marca dónde inicia el texto, el resto es el patrón a filtrar
-            #Se usa grepl porque grep solo devuelve la posición del vector obj_name en el que el elemento coincide con el patrón
-            #y también puedes pedir el texto directamente con value = TRUE.
-            #Por otro lado, grepl devuelve un TRUE o FALSE si coincide o no
+          if (inherits(obj, "Seurat") && grepl("^seurat_GSM", obj_name)) { 
             seurat_objects <- c(seurat_objects, obj_name)
           }
         }
@@ -214,98 +171,98 @@ setwd("D:/TFG/Pytables_coding")
       }
       
       
-      # Obtener lista de objetos Seurat
+      # Obtain the list of Seurat objects
       seurat_object_names <- get_seurat_objects()
       
-      cat("Objetos Seurat encontrados en el entorno:\n")
+      cat("Seurat objects found in the environment:\n")
       for (i in seq_along(seurat_object_names)) {
         cat(paste0(i, ". ", seurat_object_names[i], "\n"))
       }
-      cat("\nTotal de objetos Seurat:", length(seurat_object_names), "\n\n")
+      cat("\nTotal of Seurat objects:", length(seurat_object_names), "\n\n")
       
-      processed_objects <- c() #En este caso es mejor usar un vector en vez de una lista, ya que no voy a guardar datos complejos
+      processed_objects <- c() 
       failed_objects <- c()
       
       for (obj_name in seurat_object_names) {
         cat("==========================================\n")
-        cat("Procesando objeto:", obj_name, "\n")
+        cat("Processing object:", obj_name, "\n")
         cat("==========================================\n")
         
         tryCatch({
           seurat_obj <- get(obj_name, envir = .GlobalEnv)
           
-          # Verificar si el assay RNA tiene múltiples layers y unirlos si es necesario
+          # Verify if the assay RNA has multiple layers and unite them if necessary
           if ("RNA" %in% names(seurat_obj@assays)) {
             assay_obj <- seurat_obj[["RNA"]]
             if ("Assay5" %in% class(assay_obj) && length(Layers(assay_obj)) > 1) {
-              cat(" → RNA tiene múltiples layers, aplicando JoinLayers...\n")
+              cat(" → RNA contains multiple layers, applying JoinLayers...\n")
               seurat_obj <- JoinLayers(seurat_obj, assay = "RNA")
             }
           }
           
-          # Verificar que el objeto tenga datos RNA
+          # Verify that the object contains RNA data
           if (!"RNA" %in% names(seurat_obj@assays)) {
             warning("El objeto ", obj_name, " no tiene ensayo RNA. Saltando...")
             failed_objects <<- c(failed_objects, obj_name)
             next
           }
           
-          # Extraer matriz de cuentas
-          cat("Extrayendo matriz de cuentas...\n")
+          # Extract counts matrix
+          cat("Extracting counts matrix...\n")
           counts_matrix <- GetAssayData(seurat_obj, assay = "RNA", layer = "counts")
           
           if (ncol(counts_matrix) == 0 || nrow(counts_matrix) == 0) {
-            warning("Matriz de cuentas vacía para ", obj_name, ". Saltando...")
+            warning("Counts matrix empty for ", obj_name, ". Skipping...")
             failed_objects <<- c(failed_objects, obj_name)
             next
           }
           
-          cat("Dimensiones de la matriz:", dim(counts_matrix), "(genes x células)\n")
+          cat("Matrix dimensions:", dim(counts_matrix), "(genes x cells)\n")
           
           sce_obj <- SingleCellExperiment(assays = list(counts = counts_matrix))
-          cat("Ejecutando scDblFinder...\n")
+          cat("Executing scDblFinder...\n")
           sce_obj <- scDblFinder(sce_obj, verbose = TRUE)
           
           doublet_table <- table(sce_obj$scDblFinder.class)
-          cat("Tabla de clasificación de doublets:\n")
+          cat("Doublet classification table:\n")
           print(doublet_table)
           
-          cat("Transfiriendo resultados al objeto Seurat...\n")
+          cat("Transfering the results to the Seurat object...\n")
           seurat_obj$DoubletClass <- sce_obj$scDblFinder.class
           seurat_obj$DoubletScore <- sce_obj$scDblFinder.score
           
           assign(obj_name, seurat_obj, envir = .GlobalEnv)
-          processed_objects <<- c(processed_objects, obj_name) #Se pone así por el mismo motivo que lo de failed_objects
+          processed_objects <<- c(processed_objects, obj_name) 
           
-          cat("✓ Objeto", obj_name, "procesado exitosamente!\n")
-          cat("  - Doublets detectados:", doublet_table["doublet"], "\n")
-          cat("  - Singlets detectados:", doublet_table["singlet"], "\n\n")
+          cat("✓ Object", obj_name, "processed successfully!\n")
+          cat("  - Doublets detected:", doublet_table["doublet"], "\n")
+          cat("  - Singlets detected:", doublet_table["singlet"], "\n\n")
           
         }, error = function(e) {
-          cat("✗ Error procesando", obj_name, ":", e$message, "\n\n")
+          cat("✗ Error processing", obj_name, ":", e$message, "\n\n")
           failed_objects <<- c(failed_objects, obj_name) #Se usa <<- porque el objeto failed_objects se encuentra fuera del bucle error, por lo que tiene que buscar en entornos externos 
         })
       }
       
-      cat("=== RESUMEN FINAL ===\n")
-      cat("Total de objetos procesados exitosamente:", length(processed_objects), "\n")
-      cat("Total de objetos fallidos:", length(failed_objects), "\n\n")
+      cat("=== FINAL SUMMARY ===\n")
+      cat("Total of successfully processed objects:", length(processed_objects), "\n")
+      cat("Total of failed objects:", length(failed_objects), "\n\n")
       
       if (length(processed_objects) > 0) {
-        cat("Objetos procesados exitosamente:\n")
+        cat("Objects successfully processed:\n")
         for (i in seq_along(processed_objects)) {
           cat(paste0(i, ". ", processed_objects[i], "\n"))
         }
       }
       
       if (length(failed_objects) > 0) {
-        cat("\nObjetos que fallaron:\n")
+        cat("\nObjects that failed:\n")
         for (i in seq_along(failed_objects)) {
           cat(paste0(i, ". ", failed_objects[i], "\n"))
         }
       }
       
-      cat("\n=== LISTA DE OBJETOS SEURAT PROCESADOS ===\n")
+      cat("\n=== LIST CONTAINING THE SEURAT OBJECTS PROCESSED ===\n")
       if (length(processed_objects) > 0) {
         seurat_objects_processed <- as.list(processed_objects)
         names(seurat_objects_processed) <- processed_objects
@@ -320,244 +277,105 @@ setwd("D:/TFG/Pytables_coding")
         cat(")\n\n")
         seurat_objects <- processed_objects
         assign("seurat_objects", seurat_objects, envir = .GlobalEnv)
-        cat("Variable 'seurat_objects' creada en el entorno global.\n")
+        cat("Variable 'seurat_objects' created in the global environment.\n")
       } else {
-        cat("No se procesaron objetos exitosamente.\n")
+        cat("No objects were processed successfully.\n")
       }
       
-      cat("\n¡Procesamiento completado!\n")
+      cat("\nProcessing completed!\n")
       
 }
 
 # 4.- EXPORT to PYTHON
-#     4.1 Individual. Export to Python to create an ANNDATA OBJECT
-    # {
-    # Global_Tabula_GSM7474457_Con
-    # Global_Tabula_GSM7474487_Cru
-    # Global_Tabula_GSM7474501_Ctr 
-      
-     #  counts_matrix <- GetAssayData(Global_Squair_GSM5961588_Ctr, assay='RNA', layer='counts')
-     #  dim(counts_matrix)  # array([18044.,  2728.])
-     #  writeMM(counts_matrix, file=paste0(file='/Users/rodrigo/Desktop/LAB/matrix_files/matrix_seurat_con.mtx')) 
-     #  # El mensaje NULL sugiere que el archivo se ha escrito correctamente en el directorio
-     #  
-     #  # write gene names
-     #  write.table(data.frame('gene'=rownames(counts_matrix)), file='/Users/rodrigo/Desktop/LAB/matrix_files/gene_names_con.csv', quote=F,row.names=F,col.names=F)
-     #  
-     #  # En el caso de que emplemos el método de integración CCA o RCPA para obtener embeding layers...write dimensional reduction matrix (PCA)
-     #  # write.csv (Objeto_Seurat@reductions$pca@cell.embeddings, file='pca.csv', quote=F, row.names=F)
-     #  
-     #  View(Global_Squair_GSM5961588_Ctr@meta.data) 
-     #  dim(Global_Squair_GSM5961588_Ctr@meta.data)  # array([2728,    5], dtype=int32)
-     #  # REVISAR    Eliminar la columna 'column_to_remove' del metadata si es necesario y esta repetida. Tambien se puede en python
-     #  # Objeto_Seurat@meta.data$X <- NULL
-     #  
-     #  # save metadata table:
-     #  Global_Squair_GSM5961588_Ctr$barcode <- colnames(Global_Squair_GSM5961588_Ctr)
-     #  dim(counts_matrix)
-     #  # Global_Squair_GSM5961588_Ctr$UMAP_1 <- Global_Squair_GSM5961588_Ctr@reductions$umap@cell.embeddings[,1]
-     #  # Global_Squair_GSM5961588_Ctr$UMAP_2 <- Global_Squair_GSM5961588_Ctr@reductions$umap@cell.embeddings[,2]
-     #  write.csv(Global_Squair_GSM5961588_Ctr@meta.data, file='/Users/rodrigo/Desktop/LAB/matrix_files/Global_Squair_GSM5961588_Ctr.csv', quote=F, row.names=F)
-     # }
-     
-      
-       
-    # 4.2 ITERACION. Export to Python to create an ANNDATA OBJECTs
-    # IMPORTANTE GUARDAR  el file_list.csv generado. Importante para el próximo SCRIPT.
-    # {
-    #   # Cargar las librerías necesarias
-    #   library(Seurat)
-    #   library(Matrix)
-    #   
-    #   # Usar la lista de objetos Seurat generada por el script anterior
-    #   # (En lugar de definir manualmente la lista)
-    #   if (!exists("seurat_objects")) {
-    #     stop("La lista 'seurat_objects' no existe. Ejecuta primero el script de scDblFinder.")
-    #   }
-    #   
-    #   # Directorio de salida
-    #   output_dir <- "D:/TFG/Anndatas_coding"
-    #   
-    #   # Crear directorio si no existe
-    #   if (!dir.exists(output_dir)) {
-    #     dir.create(output_dir, recursive = TRUE)
-    #   }
-    #   
-    #   # Lista para almacenar los nombres de los archivos generados
-    #   file_records <- data.frame(
-    #     object_name = character(),
-    #     metadata_file = character(),
-    #     gene_names_file = character(),
-    #     stringsAsFactors = FALSE
-    #   )
-    #   
-    #   # Iterar sobre cada objeto usando la lista seurat_objects
-    #   for (obj_name in seurat_objects) {
-    #     # Verificar si el objeto Seurat existe en el entorno
-    #     if (!exists(obj_name)) {
-    #       print(paste("El objeto", obj_name, "no existe en el entorno. Saltando..."))
-    #       next
-    #     }
-    #     
-    #     seurat_obj <- get(obj_name)
-    #     
-    #     # Obtener la matriz de conteos
-    #     counts_matrix <- GetAssayData(seurat_obj, assay='RNA', layer='counts')
-    #     
-    #     # Definir nombres de archivos de salida
-    #     matrix_file <- paste0(output_dir, "matrix_seurat_", obj_name, ".mtx")
-    #     gene_file <- paste0(output_dir, "gene_names_", obj_name, ".csv")
-    #     metadata_file <- paste0(output_dir, obj_name, ".csv")
-    #     
-    #     # Guardar la matriz en formato .mtx
-    #     writeMM(counts_matrix, file=matrix_file)
-    #     
-    #     # Guardar los nombres de los genes
-    #     write.table(
-    #       data.frame('gene' = rownames(counts_matrix)), 
-    #       file=gene_file,
-    #       quote=F, row.names=F, col.names=F
-    #     )
-    #     
-    #     # Guardar metadata
-    #     seurat_obj$barcode <- colnames(seurat_obj)
-    #     
-    #     # Opcional: agregar coordenadas UMAP si existen
-    #     if ("umap" %in% names(seurat_obj@reductions)) {
-    #       seurat_obj$UMAP_1 <- seurat_obj@reductions$umap@cell.embeddings[,1]
-    #       seurat_obj$UMAP_2 <- seurat_obj@reductions$umap@cell.embeddings[,2]
-    #     }
-    #     
-    #     # Guardar la metadata
-    #     write.csv(
-    #       seurat_obj@meta.data, 
-    #       file=metadata_file, 
-    #       quote=F, row.names=F
-    #     )
-    #     
-    #     # Agregar los archivos generados a la lista
-    #     file_records <- rbind(file_records, data.frame(
-    #       object_name = obj_name,
-    #       metadata_file = basename(metadata_file),
-    #       gene_names_file = basename(gene_file)
-    #     ))
-    #     
-    #     print(paste("Procesado:", obj_name))
-    #   }
-    #   
-    #   # Guardar la lista de archivos generados en files_list.csv
-    #   files_list_path <- paste0(output_dir, "files_list.csv")
-    #   write.csv(file_records, files_list_path, row.names=FALSE, quote=FALSE)
-    #   
-    #   print(paste("Archivo de lista generado:", files_list_path))
-    # }
-      
-      
-      
-    #Voy a usar mejor este porque  es más robusto y porque puede tratar con Seurat v5 con lo de los layers
-   # 4.3 ITERACION Archivos grandes (batch_0+batch_1). Export to Python to create an ANNDATA OBJECTs
+   # 4.3 ITERATION for big files (batch_0+batch_1). Export to Python to create an ANNDATA OBJECTs
     {
-    # Cargar las librerías necesarias
+    # Load the necessary libraries
     library(Seurat)
     library(Matrix)
     
-    # Usar la lista de objetos Seurat generada por el script anterior
-    # (En lugar de definir manualmente la lista)
+    # Uses the Seurat objects list generated previously
     if (!exists("seurat_objects")) {
       stop("La lista 'seurat_objects' no existe. Ejecuta primero el script de scDblFinder.")
     }
     
-    # Directorio de salida
+    # Output directory
     output_dir <- "D:/TFG/PRUEBA_Anndatas_coding"
     
-    # Crear directorio si no existe
+    # Create the directory if it does not exist
     if (!dir.exists(output_dir)) {
       dir.create(output_dir, recursive = TRUE)
     }
     
-    # Lista para almacenar los nombres de los archivos generados
+    # List to store the names of the files generated
     file_records <- data.frame(
       object_name = character(),
-      object_folder = character(),#Añado la subcarpeta a las columnas del dataframe
-      matrix_file = character(),#Añado la matrix a las columnas
+      object_folder = character(),
+      matrix_file = character(),
       metadata_file = character(),
       gene_names_file = character(),
       stringsAsFactors = FALSE
     )
     
-    # Iterar sobre cada objeto usando la lista seurat_objects
+    # Iterate over every object using the list seurat_objects
     for (obj_name in seurat_objects) {
-      # Verificar si el objeto Seurat existe en el entorno
+      # Verify if the Seurat object exists in the environment
       if (!exists(obj_name)) {
-        print(paste("El objeto", obj_name, "no existe en el entorno. Saltando..."))
+        print(paste("The object", obj_name, "does not exist in the environment. Skipping..."))
         next
       }
       
       seurat_obj <- get(obj_name)
       
-      # Para Seurat v5: Unir capas si hay múltiples capas
+      # For Seurat v5: Unite the layers if there are multiple layers
       if (length(Layers(seurat_obj, assay = "RNA")) > 1) {
         print(paste("Uniendo capas para objeto:", obj_name))
         seurat_obj <- JoinLayers(seurat_obj, assay = "RNA")
       }
       
-      # Obtener la matriz de conteos
+      # Obtain the counts matrix
       counts_matrix <- GetAssayData(seurat_obj, assay='RNA', layer='counts')
       
-      # Crea la subcarpeta para este objeto Seurat
-      #Guardo la subcarpeta como GSM55... en vez de seurat_GSM55... para que sea todo más claro para python
+      # Creates the subfolder for this Seurat Object
+      # Saves the subfolder as GSM55... instead of seurat_GSM55... to simplify the Python analysis
       sample_name <- sub("^seurat_", "", obj_name)
       object_dir <- file.path(output_dir, sample_name)
       if (!dir.exists(object_dir)) {
         dir.create(object_dir, recursive = TRUE)
       }
       
-      # Definir nombres de archivos de salida
-      # matrix_file <- paste0(output_dir, "matrix_seurat_", obj_name, ".mtx")
-      # gene_file <- paste0(output_dir, "gene_names_", obj_name, ".csv")
-      # metadata_file <- paste0(output_dir, obj_name, ".csv")
-      #Lo he cambiado porque le falta un separador / entre el output_dir y la subcarpeta y también entre 
-      #la subcarpeta y el directorio del output donde va a ir cada archivo
-      #File.path me junta file.path("D:/TFG/Anndatas_coding", "GSM5514787", "matrix.mtx") para dar
-      #[1] "D:/TFG/Anndatas_coding/GSM5514787/matrix.mtx"
+      # Defining the output files names 
+      # For example: "D:/TFG/Anndatas_coding/GSM5514787/matrix.mtx"
       matrix_file <- file.path(object_dir, "matrix.mtx")
       gene_file <- file.path(object_dir, "gene_names.csv")
       metadata_file <- file.path(object_dir, "metadata.csv")
       
-      # Guardar la matriz en formato .mtx
+      # Save the matrix in .mtx format
       writeMM(counts_matrix, file=matrix_file)
       
-      # Guardar los nombres de los genes
+      # Save the gene names
       write.table(
         data.frame('gene' = rownames(counts_matrix)), 
         file=gene_file,
         quote=FALSE, row.names=FALSE, col.names=FALSE
       )
       
-      # Guardar metadata
+      # Save metadata
       seurat_obj$barcode <- colnames(seurat_obj)
       
-      # Opcional: agregar coordenadas UMAP si existen
+      # Add UMAP coordinates if existing
       if ("umap" %in% names(seurat_obj@reductions)) {
         seurat_obj$UMAP_1 <- seurat_obj@reductions$umap@cell.embeddings[,1]
         seurat_obj$UMAP_2 <- seurat_obj@reductions$umap@cell.embeddings[,2]
       }
       
-      # Guardar la metadata
+      # Save metadata
       write.csv(
         seurat_obj@meta.data, 
         file=metadata_file, 
         quote=FALSE, row.names=FALSE
       )
       
-      # Agregar los archivos generados a la lista
-      # file_records <- rbind(file_records, data.frame(
-      #   object_name = obj_name,
-      #   metadata_file = basename(metadata_file),
-      #   gene_names_file = basename(gene_file)
-      # ))
-      #Debido a que he añadido 2 columnas nuevas, una con la subcarpeta y otra con la matrix, hay que 
-      #cambiar la forma en la que se agregan los archivos generados a la lista
+      # Add the generated files to the list
       file_records <- rbind(file_records, data.frame(
         object_name = obj_name,
         object_folder = sample_name,
@@ -567,16 +385,13 @@ setwd("D:/TFG/Pytables_coding")
         stringsAsFactors = FALSE
       ))
       
-      print(paste("Procesado:", obj_name))
+      print(paste("Processed:", obj_name))
     }
     
-    # Guardar la lista de archivos generados en files_list.csv
-    #files_list_path <- paste0(output_dir, "files_list.csv") 
-    #Esto anterior está mal, ya que no pone el separador / entre el nombre del directorio
-    #y el nombre del archivo csv
+    # Save the list of generated files in files_list.csv
     files_list_path <- file.path(output_dir, "files_list.csv")
     write.csv(file_records, files_list_path, row.names=FALSE, quote=FALSE)
     
-    print(paste("Archivo de lista generado:", files_list_path))
+    print(paste("List file generated:", files_list_path))
     }  
     
