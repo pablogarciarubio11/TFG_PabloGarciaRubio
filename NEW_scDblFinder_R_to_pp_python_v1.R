@@ -13,8 +13,6 @@ setwd("D:/TFG/Pytables_coding")
   #Execute if not installed 
   
   #install.packages('Seurat', repos = c('https://satijalab.r-universe.dev', 'https://cloud.r-project.org'))
-  # SeuratDisk is not currently available on CRAN. You can install it from GitHub with:
-  # NO funciona para obtener el seurat-disk en esta nueva version de Seurat 5.0
   
   # SeuratDisk is not currently available on CRAN. You can install it from GitHub with:
   # if (!requireNamespace("remotes", quietly = TRUE)) {
